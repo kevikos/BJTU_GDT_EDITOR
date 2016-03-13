@@ -1,5 +1,5 @@
-# BJTU-game-tool-development
-This is the github repository for the game tool development homework
+# BJTU_GDT_EDITOR
+This is the github repository for the game dev tool homework - Game Editor
 
 # Team members
 *Mattieu BERNARD-GUELE (15129004)* 
