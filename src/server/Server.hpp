@@ -5,6 +5,7 @@
 #include       		<cstdlib>
 #include		<vector>
 #include       		<string>
+#include                <string.h>
 #include	       	"../lib/SocketAPI/SocketTCP.hpp"
 #include		"../lib/SocketAPI/SocketTCPServer.hpp"
 #include		"../lib/SocketAPI/Select/FDSet/FDSet.hpp"
