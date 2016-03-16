@@ -49,12 +49,20 @@ int					main(int ac, char **av) {
 		    delete clients[i];
 		    clients.erase(clients.begin() + i);
 		}
-		if (std::string(buff).size() > 7 && std::string(buff).compare(std::string(buff).size()-7, 7, "player|"))
+		std::cout << buff << std::endl;
+		if (std::string(buff).size() > 7 && std::string(buff).compare(0, 7, "player|") == 0)
 		{
 		    std::cout << "It's a client bitch" << std::endl;
 		    std::cout << "His name is " << std::string(buff).substr(7, std::string(buff).length()) << std::endl;
 		    clients[i]->setName(std::string(buff).substr(7, std::string(buff).length()));
 		    clients[i]->setType(PLAYER);
+		}
+		if (std::string(buff).size() > 7 && std::string(buff).compare(0, 7, "editor|") == 0)
+		{
+		    std::cout << "It's a editor bitch" << std::endl;
+		    std::cout << "His name is " << std::string(buff).substr(7, std::string(buff).length()) << std::endl;
+		    clients[i]->setName(std::string(buff).substr(7, std::string(buff).length()));
+		    clients[i]->setType(EDITOR);
 		}
 		if (clients[i]->getName() == "" && clients[i]->getType() == UNDEFINED)
 		{
@@ -66,7 +74,7 @@ int					main(int ac, char **av) {
 		j = 0;
 		while (j < clients.size())
 		{
-		    if (j != i)
+		    if (j != i && clients[j]->getType() != EDITOR)
 		    {
 			std::cout << "SEND : " << buff << std::endl;
 			clients[j]->getSocket()->send(buff, nbRead);
