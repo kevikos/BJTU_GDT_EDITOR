@@ -12,7 +12,8 @@ CLIENTNAME	=	Client
 
 EDITORNAME	=	Editor
 
-SRCSERVER	=	./src/server/server.cpp
+SRCSERVER	=	./src/server/Server.cpp					\
+			./src/server/Client.cpp
 
 SRCCLIENT	=	./src/client/client.cpp
 
