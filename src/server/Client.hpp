@@ -21,6 +21,7 @@ public:
     void		setType(ClientType);
     ClientType		getType();
     SocketTCPClient*	getSocket();
+    void		show();
 };
 
 #endif			/* CLIENT_HPP_ */

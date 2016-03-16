@@ -36,3 +36,14 @@ SocketTCPClient*	Client::getSocket()
 {
     return (_socket);
 }
+
+void		Client::show()
+{
+    std::cout << "Name: " << _name << std::endl;
+    if (_type == PLAYER)
+	std::cout << "PLAYER" << std::endl;
+    else if (_type == EDITOR)
+	std::cout << "EDITOR" << std::endl;
+    else
+	std::cout << "UNDEFINED" << std::endl;
+}

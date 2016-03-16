@@ -4,45 +4,52 @@
 #include "../lib/SocketAPI/Select/Select.hpp"
 
 int main(int ac, char **av) {
-  SocketTCPClient client;
+    SocketTCPClient client;
 
-  if (ac != 3)
+    if (ac != 4)
     {
-      std::cout << "./client host port" << std::endl;
-      return (0);
+	std::cout << "./client host port name" << std::endl;
+	return (0);
     }
-  client.start();
-  client.connectToServer(av[1], atoi(av[2]));
+    client.start();
+    client.connectToServer(av[1], atoi(av[2]));
 
 
-  FDSet fdSet;
-  char buff[1024];
-  std::string entry;
-  int nbRead;
+    FDSet fdSet;
+    char buff[1024];
+    std::string entry;
+    int nbRead;
 
-  while (true)
+    while (true)
     {
-      fdSet.zero();
-      fdSet.set(&client);
-      fdSet.set(0);
-      Select::call(&fdSet, NULL);
-      if (fdSet.isset(&client))
+	fdSet.zero();
+	fdSet.set(&client);
+	fdSet.set(0);
+	Select::call(&fdSet, NULL);
+	if (fdSet.isset(&client))
 	{
-	  if ((nbRead = client.receive(buff, 1024)) == 0)
+	    if ((nbRead = client.receive(buff, 1024)) == 0)
 	    {
-	      client.close();
-	      std::cout << "Server left" << std::endl;
-	      return 0;
+		client.close();
+		std::cout << "Server left" << std::endl;
+		return 0;
 	    }
-	  std::cout << "msg : " << buff << std::endl;
-	  memset(buff, 0, 1024);
+	    if (std::string(buff) == "BIENVENU")
+	    {
+		client.send(("player|" + std::string(av[3])).c_str(), 7 + std::string(av[3]).length());
+	    }
+	    if (std::string(buff) == "kick")
+	    {
+		std::cout << "You are kicked by server" << std::endl;
+		return (0);
+	    }
+	    std::cout << "msg : " << buff << std::endl;
+	    memset(buff, 0, 1024);
 	}
-      if (fdSet.isset(0))
+	if (fdSet.isset(0))
 	{
-	  std::getline(std::cin, entry);
-	  //	  std::cin >> entry;
-	  //std::cout << "Send : " << entry << std::endl;
-	  client.send(entry.c_str(), entry.length());
+	    std::getline(std::cin, entry);
+	    client.send(entry.c_str(), entry.length());
 	}      
     }
 }

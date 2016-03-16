@@ -1,6 +1,11 @@
 #include				"Server.hpp"
 #include				"Client.hpp"
 
+void					ejectClient()
+{
+
+}
+
 int					main(int ac, char **av) {
     FDSet				fdSet;
     SocketTCPServer			server;
@@ -19,7 +24,6 @@ int					main(int ac, char **av) {
     server.create("127.0.0.1", atoi(av[1]));
     while (true)
     {
-
 	fdSet.zero();
 	fdSet.set(&server);
 	i = 0;
@@ -27,7 +31,7 @@ int					main(int ac, char **av) {
 	    fdSet.set(clients[i++]->getSocket());
 	Select::call(&fdSet, NULL);
 	if (fdSet.isset(&server))
-	{	    
+	{
 	    clients.push_back(new Client(server.acceptClient()));
 	    clients[clients.size() - 1]->getSocket()->send("BIENVENU", 8);
 	}
@@ -36,6 +40,7 @@ int					main(int ac, char **av) {
 	{
 	    if (fdSet.isset(clients[i]->getSocket()))
 	    {
+		clients[i]->show();
 		memset(buff, 0, 1024);
 		if ((nbRead = clients[i]->getSocket()->receive(buff, 1024)) == 0)
 		{
@@ -44,7 +49,20 @@ int					main(int ac, char **av) {
 		    delete clients[i];
 		    clients.erase(clients.begin() + i);
 		}
-		std::cout << buff[0] << std::endl;
+		if (std::string(buff).size() > 7 && std::string(buff).compare(std::string(buff).size()-7, 7, "player|"))
+		{
+		    std::cout << "It's a client bitch" << std::endl;
+		    std::cout << "His name is " << std::string(buff).substr(7, std::string(buff).length()) << std::endl;
+		    clients[i]->setName(std::string(buff).substr(7, std::string(buff).length()));
+		    clients[i]->setType(PLAYER);
+		}
+		if (clients[i]->getName() == "" && clients[i]->getType() == UNDEFINED)
+		{
+		    clients[i]->getSocket()->send("kick", 4);
+		    clients[i]->getSocket()->close();
+		    delete clients[i];
+		    clients.erase(clients.begin() + i);
+		}
 		j = 0;
 		while (j < clients.size())
 		{
@@ -59,5 +77,5 @@ int					main(int ac, char **av) {
 	    i++;
 	}
     }
-    SocketTCP::stop();
+//    SocketTCP::stop();
 }
