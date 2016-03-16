@@ -1,9 +1,11 @@
 #include				"Server.hpp"
 #include				"Client.hpp"
 
-void					ejectClient()
+void					ejectClient(std::vector<Client*> clients, int i)
 {
-
+    clients[i]->getSocket()->close();
+    delete clients[i];
+    clients.erase(clients.begin() + i);
 }
 
 int					main(int ac, char **av) {
@@ -45,9 +47,7 @@ int					main(int ac, char **av) {
 		if ((nbRead = clients[i]->getSocket()->receive(buff, 1024)) == 0)
 		{
 		    buff[nbRead] = 0;
-		    clients[i]->getSocket()->close();
-		    delete clients[i];
-		    clients.erase(clients.begin() + i);
+		    ejectClient(clients, i);
 		}
 		std::cout << buff << std::endl;
 		if (std::string(buff).size() > 7 && std::string(buff).compare(0, 7, "player|") == 0)
@@ -67,9 +67,7 @@ int					main(int ac, char **av) {
 		if (clients[i]->getName() == "" && clients[i]->getType() == UNDEFINED)
 		{
 		    clients[i]->getSocket()->send("kick", 4);
-		    clients[i]->getSocket()->close();
-		    delete clients[i];
-		    clients.erase(clients.begin() + i);
+		    ejectClient(clients, i);
 		}
 		j = 0;
 		while (j < clients.size())
