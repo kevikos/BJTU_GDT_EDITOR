@@ -1,4 +1,6 @@
 #include <iostream>
+#include <stdlib.h>
+#include <string.h>
 #include "../lib/SocketAPI/SocketTCPClient.hpp"
 #include "../lib/SocketAPI/Select/FDSet/FDSet.hpp"
 #include "../lib/SocketAPI/Select/Select.hpp"
