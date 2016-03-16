@@ -4,7 +4,7 @@ RM		=	rm -f
 
 CXXFLAGS	=	##-Wextra -Wall -Werror
 
-LDFLAGS		=	##
+LDFLAGS		=	 -L /usr/local/lib -lsfml-graphics -lsfml-window -lsfml-system
 
 SERVERNAME	=	Server
 
@@ -42,7 +42,7 @@ $(SERVERNAME):		$(SERVEROBJS) $(LIBRARYOBJS)
 			$(CC) $(SERVEROBJS) $(LIBRARYOBJS) -o $(SERVERNAME)
 
 $(CLIENTNAME):		$(CLIENTOBJS) $(LIBRARYOBJS)
-			$(CC) $(CLIENTOBJS) $(LIBRARYOBJS) -o $(CLIENTNAME)
+			$(CC) $(CLIENTOBJS) $(LIBRARYOBJS) -o $(CLIENTNAME) $(LDFLAGS)
 
 $(EDITORNAME):		$(EDITOROBJS) $(LIBRARYOBJS)
 			$(CC) $(EDITOROBJS) $(LIBRARYOBJS) -o $(EDITORNAME)

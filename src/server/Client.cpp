@@ -1,3 +1,5 @@
+#include        <stdlib.h>
+#include        <string.h>
 #include	"Server.hpp"
 #include	"Client.hpp"
 
