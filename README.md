@@ -12,7 +12,7 @@ This is the github repository for the game dev tool homework - Game Editor
 
 *Medhi KOLAI (15129006)*
 
-*Remi EVRAER (15129008)*
+*Remi EVRAERE (15129008)*
 
 
 ##PROBLEMS##
