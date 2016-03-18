@@ -8,10 +8,10 @@ class		SelectWindows : public ISelect
 {
 public:
 
-  SelectWindows();
-  virtual ~SelectWindows();
+    SelectWindows();
+    virtual ~SelectWindows();
 
-  virtual bool	call(const FDSet* read, const FDSet* write);
+    virtual bool	call(const FDSet* read, const FDSet* write, struct timeval *tv);
 };
 
 #endif		// !SELECTWINDOWS_HPP_

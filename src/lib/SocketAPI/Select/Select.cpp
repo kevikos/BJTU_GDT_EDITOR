@@ -16,7 +16,7 @@ Select::~Select()
 {
 }
 
-bool		Select::call(const FDSet* read, const FDSet* write)
+bool		Select::call(const FDSet* read, const FDSet* write, struct timeval *tv)
 {
   ISelect*	select;
 
@@ -25,7 +25,7 @@ bool		Select::call(const FDSet* read, const FDSet* write)
 #else
   select = new SelectUnix;
 #endif // WIN
-  if (select->call(read, write) == false)
+  if (select->call(read, write, tv) == false)
     {
       std::cerr << "[ERROR] : ISelect::call failed." << std::endl;
       delete select;

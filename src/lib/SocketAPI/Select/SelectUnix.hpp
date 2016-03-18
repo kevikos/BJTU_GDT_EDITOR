@@ -10,7 +10,7 @@ class		SelectUnix : public ISelect
   SelectUnix();
   virtual ~SelectUnix();
 	
-  virtual bool	call(const FDSet* read, const FDSet* write);
+    virtual bool	call(const FDSet* read, const FDSet* write, struct timeval *tv);
 };
 
 

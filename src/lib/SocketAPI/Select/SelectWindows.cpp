@@ -8,17 +8,14 @@ SelectWindows::~SelectWindows()
 {
 }
 
-bool		SelectWindows::call(const FDSet* read, const FDSet* write)
+bool		SelectWindows::call(const FDSet* read, const FDSet* write, struct timeval *tv)
 {
-  fd_set*	new_read = (fd_set*)read->getFDSet();
-  struct timeval tv;
+    fd_set*	new_read = (fd_set*)read->getFDSet();
+    (void)write;
 
-  tv.tv_sec = 0;
-  tv.tv_usec = 0;
-  //FDSetWindows	*new_write = (FDSetWindows *)write->getFDSet();
-  if (select(0, (fd_set*)new_read, NULL, NULL, &tv) == -1)
+    if (select(0, (fd_set*)new_read, NULL, NULL, tv) == -1)
     {
-      return (false);
+	return (false);
     }
-  return (true);
+    return (true);
 }

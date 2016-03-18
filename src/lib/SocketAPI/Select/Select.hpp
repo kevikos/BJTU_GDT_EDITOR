@@ -10,7 +10,7 @@ public:
   Select();
   ~Select();
 
-  static bool	call(const FDSet* read, const FDSet* write);
+    static bool	call(const FDSet* read, const FDSet* write, struct timeval *tv);
 };
 
 #endif		// !SELECT_HPP_

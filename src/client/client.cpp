@@ -42,7 +42,11 @@ int main(int ac, char **av) {
 	fdSet.zero();
 	fdSet.set(&client);
 	fdSet.set(0);
-	Select::call(&fdSet, NULL);
+	if (!Select::call(&fdSet, NULL, NULL))
+	{
+	    std::cout << "Client : Socket managment failed" << std::endl;
+	    return (-1);
+	}
 	if (fdSet.isset(&client))
 	{
 	    if ((nbRead = client.receive(buff, 1024)) == 0)

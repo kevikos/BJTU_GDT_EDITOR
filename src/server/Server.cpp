@@ -16,7 +16,8 @@ int					main(int ac, char **av) {
     int					j;
     char				buff[1024];
     int					nbRead;
-
+    struct timeval			tv;
+    
     if (ac != 2)
     {
 	std::cout << "./server port" << std::endl;
@@ -31,7 +32,13 @@ int					main(int ac, char **av) {
 	i = 0;
 	while (i < clients.size())
 	    fdSet.set(clients[i++]->getSocket());
-	Select::call(&fdSet, NULL);
+	tv.tv_sec = 10;
+	tv.tv_usec = 0;
+	if (Select::call(&fdSet, NULL, &tv) == false)
+	{
+	    std::cout << "Server : Socket managment failed" << std::endl;
+	    return (-1);
+	}
 	if (fdSet.isset(&server))
 	{
 	    clients.push_back(new Client(server.acceptClient()));

@@ -9,18 +9,14 @@ SelectUnix::~SelectUnix()
 {
 }
 
-bool		SelectUnix::call(const FDSet* read, const FDSet* write)
+bool		SelectUnix::call(const FDSet* read, const FDSet* write, struct timeval *tv)
 {
-  fd_set*	new_read = (fd_set*)read->getFDSet();
-  (void)write;
-  struct timeval timeout;
+    fd_set*	new_read = (fd_set*)read->getFDSet();
+    (void)write;
 
-  timeout.tv_sec = 0;
-  timeout.tv_usec = 0;
-  //FDSetUnix	*new_write = (FDSetUnix *)write->getFDSet();
-  if (select(read->getHighFD() + 1, (fd_set*)new_read, NULL, NULL, &timeout) == -1)
+    if (select(read->getHighFD() + 1, (fd_set*)new_read, NULL, NULL, tv) == -1)
     {
-      return (false);
+	return (false);
     }
-  return (true);
+    return (true);
 }

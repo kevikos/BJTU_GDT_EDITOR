@@ -1,15 +1,14 @@
-#ifndef		ISELECT_HPP_
-# define	ISELECT_HPP_
+#ifndef			ISELECT_HPP_
+# define		ISELECT_HPP_
 
-# include	"./FDSet/FDSet.hpp"
+# include		"./FDSet/FDSet.hpp"
 
-class		ISelect
+class			ISelect
 {
- public:
+public:
 
-  virtual ~ISelect() {}
-
-  virtual bool	call(const FDSet* read, const FDSet* write) = 0;
+    virtual ~ISelect() {}
+    virtual bool	call(const FDSet* read, const FDSet* write, struct timeval *tv) = 0;
 };
 
-#endif		// !ISELECT_HPP_
+#endif			// !ISELECT_HPP_

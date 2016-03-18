@@ -9,10 +9,10 @@ int main(int ac, char **av) {
 
     SocketTCPClient client;
 
-  if (ac != 3)
+    if (ac != 3)
     {
-      std::cout << "./editor host port" << std::endl;
-      return (0);
+	std::cout << "./editor host port" << std::endl;
+	return (0);
     }
     
     client.start();
@@ -28,7 +28,11 @@ int main(int ac, char **av) {
         fdSet.zero();
         fdSet.set(&client);
         fdSet.set(0);
-        Select::call(&fdSet, NULL);
+        if (!Select::call(&fdSet, NULL, NULL))
+	{
+	    std::cout << "Editor : Socket managment failed" << std::endl;
+	    return (-1);
+	}
         if (fdSet.isset(&client))
         {
             if ((nbRead = client.receive(buff, 1024)) == 0)
