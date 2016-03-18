@@ -1,11 +1,69 @@
 #include				"Server.hpp"
 #include				"Client.hpp"
 
-void					ejectClient(std::vector<Client*> clients, int i)
+void					ejectClient(std::vector<Client*> *clients, int i)
 {
-    clients[i]->getSocket()->close();
-    delete clients[i];
-    clients.erase(clients.begin() + i);
+    (*clients)[i]->getSocket()->close();
+    delete (*clients)[i];
+    (*clients).erase((*clients).begin() + i);
+}
+
+int					init(int ac, char **av, SocketTCPServer *server)
+{
+    if (ac != 2)
+    {
+	std::cout << "Usage : ./server port" << std::endl;
+	return (1);
+    }
+    if (!SocketTCP::start())
+	return (-1);
+    if (!server->create("127.0.0.1", atoi(av[1])))
+	return (-1);
+    return (0);
+}
+
+int					editorIsOnline(std::vector<Client*> *clients)
+{
+    int				i;
+
+    i = 0;
+    while (i < clients->size())
+    {
+	if ((*clients)[i]->getType() == EDITOR)
+	    return (1);
+	i++;
+    }
+    return (0);
+}
+
+void					receiveAndProcess(char (*buff)[1024], std::vector<Client*> *clients, int i)
+{
+    int					nbRead;
+
+    memset(*buff, 0, 1024);
+    if ((nbRead = (*clients)[i]->getSocket()->receive(*buff, 1024)) == 0)
+    {
+	std::cout << "Client left : " << (*clients)[i]->getName() << std::endl;	    
+	ejectClient(clients, i);
+    }
+    (*buff)[nbRead] = 0;
+    if (std::string(*buff).size() > 7 && std::string(*buff).compare(0, 7, "player|") == 0)
+    {
+	std::cout << "Player " << std::string(*buff).substr(7, std::string(*buff).length()) << " online." << std::endl;
+	(*clients)[i]->setName(std::string(*buff).substr(7, std::string(*buff).length()));
+	(*clients)[i]->setType(PLAYER);
+    }
+    else if (editorIsOnline(clients) == 0 && std::string(*buff).size() > 7 && std::string(*buff).compare(0, 7, "editor|") == 0)
+    {
+	std::cout << "Editor online" << std::endl;
+	(*clients)[i]->setName(std::string(*buff).substr(7, std::string(*buff).length()));
+	(*clients)[i]->setType(EDITOR);
+    }
+    if ((*clients)[i]->getName() == "" && (*clients)[i]->getType() == UNDEFINED)
+    {
+	(*clients)[i]->getSocket()->send("kick", 4);
+	ejectClient(clients, i);
+    }
 }
 
 int					main(int ac, char **av) {
@@ -15,16 +73,11 @@ int					main(int ac, char **av) {
     int					i;
     int					j;
     char				buff[1024];
-    int					nbRead;
     struct timeval			tv;
+    int					ret;
     
-    if (ac != 2)
-    {
-	std::cout << "./server port" << std::endl;
-	return (0);
-    }
-    SocketTCP::start();
-    server.create("127.0.0.1", atoi(av[1]));
+    if ((ret = init(ac, av, &server)) != 0)
+	return (ret);
     while (true)
     {
 	fdSet.zero();
@@ -32,9 +85,9 @@ int					main(int ac, char **av) {
 	i = 0;
 	while (i < clients.size())
 	    fdSet.set(clients[i++]->getSocket());
-	tv.tv_sec = 10;
+	tv.tv_sec = 1;
 	tv.tv_usec = 0;
-	if (Select::call(&fdSet, NULL, &tv) == false)
+	if (!Select::call(&fdSet, NULL, &tv))
 	{
 	    std::cout << "Server : Socket managment failed" << std::endl;
 	    return (-1);
@@ -49,42 +102,16 @@ int					main(int ac, char **av) {
 	{
 	    if (fdSet.isset(clients[i]->getSocket()))
 	    {
-		clients[i]->show();
-		memset(buff, 0, 1024);
-		if ((nbRead = clients[i]->getSocket()->receive(buff, 1024)) == 0)
+		receiveAndProcess(&buff, &clients, i);
+		if (clients[j]->getType() == EDITOR)
 		{
-		    buff[nbRead] = 0;
-		    ejectClient(clients, i);
-		}
-		std::cout << buff << std::endl;
-		if (std::string(buff).size() > 7 && std::string(buff).compare(0, 7, "player|") == 0)
-		{
-		    std::cout << "It's a client bitch" << std::endl;
-		    std::cout << "His name is " << std::string(buff).substr(7, std::string(buff).length()) << std::endl;
-		    clients[i]->setName(std::string(buff).substr(7, std::string(buff).length()));
-		    clients[i]->setType(PLAYER);
-		}
-		if (std::string(buff).size() > 7 && std::string(buff).compare(0, 7, "editor|") == 0)
-		{
-		    std::cout << "It's a editor bitch" << std::endl;
-		    std::cout << "His name is " << std::string(buff).substr(7, std::string(buff).length()) << std::endl;
-		    clients[i]->setName(std::string(buff).substr(7, std::string(buff).length()));
-		    clients[i]->setType(EDITOR);
-		}
-		if (clients[i]->getName() == "" && clients[i]->getType() == UNDEFINED)
-		{
-		    clients[i]->getSocket()->send("kick", 4);
-		    ejectClient(clients, i);
-		}
-		j = 0;
-		while (j < clients.size())
-		{
-		    if (j != i && clients[j]->getType() != EDITOR)
+		    j = 0;
+		    while (j < clients.size())
 		    {
-			std::cout << "SEND : " << buff << std::endl;
-			clients[j]->getSocket()->send(buff, nbRead);
+			if (clients[j]->getType() != EDITOR)
+			    clients[j]->getSocket()->send(buff, std::string(buff).size());
+			j++;
 		    }
-		    j++;
 		}
 	    }
 	    i++;

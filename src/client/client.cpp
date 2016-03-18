@@ -36,25 +36,31 @@ int main(int ac, char **av) {
     char buff[1024];
     std::string entry;
     int nbRead;
-
+    sf::Event event;
+    struct timeval tv;
+	
     while (window.isOpen())
     {
 	fdSet.zero();
 	fdSet.set(&client);
 	fdSet.set(0);
-	if (!Select::call(&fdSet, NULL, NULL))
+	tv.tv_sec = 1;
+	tv.tv_usec = 0;
+	if (!Select::call(&fdSet, NULL, &tv))
 	{
 	    std::cout << "Client : Socket managment failed" << std::endl;
 	    return (-1);
 	}
 	if (fdSet.isset(&client))
 	{
+	    memset(buff, 0, 1024);		
 	    if ((nbRead = client.receive(buff, 1024)) == 0)
 	    {
 		client.close();
 		std::cout << "Server left" << std::endl;
 		return 0;
 	    }
+	    buff[nbRead] = 0;
 	    if (std::string(buff) == "BIENVENU")
 	    {
 		client.send(("player|" + std::string(av[3])).c_str(), 7 + std::string(av[3]).length());
@@ -97,14 +103,12 @@ int main(int ac, char **av) {
 
 	    }
 	    std::cout << "msg : " << buff << std::endl;
-	    memset(buff, 0, 1024);
 	}
 	if (fdSet.isset(0))
 	{
 	    std::getline(std::cin, entry);
 	    client.send(entry.c_str(), entry.length());
 	}
-	sf::Event event;
 	while (window.pollEvent(event))
 	{
 	    if (event.type == sf::Event::Closed)
