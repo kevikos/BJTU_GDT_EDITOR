@@ -37,7 +37,7 @@ int main(int ac, char **av) {
     std::string entry;
     int nbRead;
 
-    while (true)
+    while (window.isOpen())
     {
 	fdSet.zero();
 	fdSet.set(&client);
@@ -61,7 +61,7 @@ int main(int ac, char **av) {
 		return (0);
 	    }
 	    else if (std::string(buff) == "1")
-	      {
+	    {
 		color = sf::Color::Blue;
 		color2 = sf::Color::Red;
 		color3 = sf::Color::Yellow;
@@ -70,9 +70,9 @@ int main(int ac, char **av) {
 		shape2.setFillColor(color2);
 		shape3.setFillColor(color3);
 
-	      }
+	    }
 	    else if (std::string(buff) == "2")
-	      {
+	    {
 		color = sf::Color::Black;
 		color2 = sf::Color::White;
 		color3 = sf::Color::Blue;
@@ -81,9 +81,9 @@ int main(int ac, char **av) {
 		shape2.setFillColor(color2);
 		shape3.setFillColor(color3);
 
-	      }
+	    }
 	    else if (std::string(buff) == "3")
-	      {
+	    {
 		color = sf::Color::Red;
 		color2 = sf::Color::Yellow;
 		color3 = sf::Color::Green;
@@ -91,7 +91,7 @@ int main(int ac, char **av) {
 		shape2.setFillColor(color2);
 		shape3.setFillColor(color3);
 
-	      }
+	    }
 	    std::cout << "msg : " << buff << std::endl;
 	    memset(buff, 0, 1024);
 	}
@@ -99,6 +99,12 @@ int main(int ac, char **av) {
 	{
 	    std::getline(std::cin, entry);
 	    client.send(entry.c_str(), entry.length());
+	}
+	sf::Event event;
+	while (window.pollEvent(event))
+	{
+	    if (event.type == sf::Event::Closed)
+		window.close();
 	}
 	window.clear();
 	window.draw(shape);

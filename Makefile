@@ -4,7 +4,7 @@ RM		=	rm -f
 
 CXXFLAGS	=	##-Wextra -Wall -Werror
 
-LDFLAGS		=	 -L /usr/local/lib -lsfml-graphics -lsfml-window -lsfml-system
+LDFLAGS		=	 -framework sfml-graphics -framework sfml-window -framework sfml-system -framework sfml-audio
 
 SERVERNAME	=	Server
 
