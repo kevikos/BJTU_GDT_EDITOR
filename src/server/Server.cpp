@@ -64,6 +64,7 @@ void					receiveAndProcess(char (*buff)[1024], std::vector<Client*> *clients, in
 	(*clients)[i]->getSocket()->send("kick", 4);
 	ejectClient(clients, i);
     }
+
 }
 
 int					main(int ac, char **av) {
@@ -103,13 +104,16 @@ int					main(int ac, char **av) {
 	    if (fdSet.isset(clients[i]->getSocket()))
 	    {
 		receiveAndProcess(&buff, &clients, i);
-		if (clients[j]->getType() == EDITOR)
+		if (clients[i]->getType() == EDITOR)
 		{
 		    j = 0;
 		    while (j < clients.size())
 		    {
 			if (clients[j]->getType() != EDITOR)
+			{
 			    clients[j]->getSocket()->send(buff, std::string(buff).size());
+			    std::cout << "Send : " << buff << std::endl;
+			}
 			j++;
 		    }
 		}

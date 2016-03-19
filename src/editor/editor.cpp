@@ -1,28 +1,24 @@
-#include <iostream>
-#include <stdlib.h>
-#include <string.h>
-#include "../lib/SocketAPI/SocketTCPClient.hpp"
-#include "../lib/SocketAPI/Select/FDSet/FDSet.hpp"
-#include "../lib/SocketAPI/Select/Select.hpp"
+#include			<iostream>
+#include			<stdlib.h>
+#include			<string.h>
+#include			"../lib/SocketAPI/SocketTCPClient.hpp"
+#include			"../lib/SocketAPI/Select/FDSet/FDSet.hpp"
+#include			"../lib/SocketAPI/Select/Select.hpp"
 
-int main(int ac, char **av) {
-
-    SocketTCPClient client;
+int				main(int ac, char **av) {
+    SocketTCPClient		client;
+    FDSet			fdSet;
+    char			buff[1024];
+    std::string			entry;
+    int				nbRead;
 
     if (ac != 3)
     {
 	std::cout << "./editor host port" << std::endl;
 	return (0);
     }
-    
     client.start();
     client.connectToServer(av[1], atoi(av[2]));
-    
-    FDSet fdSet;
-    char buff[1024];
-    std::string entry;
-    int nbRead;
-    
     while (true)
     {
         fdSet.zero();
@@ -35,12 +31,14 @@ int main(int ac, char **av) {
 	}
         if (fdSet.isset(&client))
         {
+            memset(buff, 0, 1024);
             if ((nbRead = client.receive(buff, 1024)) == 0)
             {
                 client.close();
                 std::cout << "Server left" << std::endl;
                 return 0;
             }
+	    buff[nbRead] = 0;
             if (std::string(buff) == "BIENVENU")
             {
                 client.send("editor|editor", 13);
@@ -50,8 +48,6 @@ int main(int ac, char **av) {
                 std::cout << "You are kicked by server" << std::endl;
                 return (0);
             }
-            std::cout << "msg : " << buff << std::endl;
-            memset(buff, 0, 1024);
         }
         if (fdSet.isset(0))
         {

@@ -1,22 +1,26 @@
-#include <stdlib.h>
-#include <string.h>
-#include <iostream>
-#include "../lib/SocketAPI/SocketTCPClient.hpp"
-#include "../lib/SocketAPI/Select/FDSet/FDSet.hpp"
-#include "../lib/SocketAPI/Select/Select.hpp"
-#include <SFML/Graphics.hpp>
+#include		<stdlib.h>
+#include		<string.h>
+#include		<iostream>
+#include		<SFML/Graphics.hpp>
+#include		"../lib/SocketAPI/SocketTCPClient.hpp"
+#include		"../lib/SocketAPI/Select/FDSet/FDSet.hpp"
+#include		"../lib/SocketAPI/Select/Select.hpp"
 
-int main(int ac, char **av) {
-    SocketTCPClient client;
-
-    sf::RenderWindow window(sf::VideoMode(800, 800), "SFML color game");
-    sf::CircleShape shape(400.f);
-    sf::CircleShape shape2(300.f);
-    sf::CircleShape shape3(200.f);
-
-    sf::Color color;
-    sf::Color color2;
-    sf::Color color3;
+int			main(int ac, char **av) {
+    SocketTCPClient	client;
+    sf::RenderWindow	window(sf::VideoMode(800, 800), "SFML color game");
+    sf::CircleShape	shape(400.f);
+    sf::CircleShape	shape2(300.f);
+    sf::CircleShape	shape3(200.f);
+    sf::Color		color;
+    sf::Color		color2;
+    sf::Color		color3;
+    FDSet		fdSet;
+    char		buff[1024];
+    std::string		entry;
+    int			nbRead;
+    sf::Event		event;
+    struct timeval	tv;
 
     if (ac != 4)
     {
@@ -31,14 +35,6 @@ int main(int ac, char **av) {
     shape.setFillColor(color);
     shape2.setFillColor(color2);
     shape3.setFillColor(color3);
-
-    FDSet fdSet;
-    char buff[1024];
-    std::string entry;
-    int nbRead;
-    sf::Event event;
-    struct timeval tv;
-	
     while (window.isOpen())
     {
 	fdSet.zero();
@@ -103,12 +99,12 @@ int main(int ac, char **av) {
 
 	    }
 	    std::cout << "msg : " << buff << std::endl;
-	}
+	}	
 	if (fdSet.isset(0))
 	{
 	    std::getline(std::cin, entry);
 	    client.send(entry.c_str(), entry.length());
-	}
+	}	
 	while (window.pollEvent(event))
 	{
 	    if (event.type == sf::Event::Closed)
